@@ -7,11 +7,9 @@ import (
 )
 
 func search(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("method:", r.Method)
 	if r.Method == "POST" {
 		r.ParseForm()
-		fmt.Println("username:", r.Form["fname"])
-		fmt.Println("password:", r.Form["lname"])
+		fmt.Println("website:", r.Form["website"])
 	}
 }
 
