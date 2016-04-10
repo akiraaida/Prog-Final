@@ -4,15 +4,22 @@
         <link rel="stylesheet" type="text/css" href="bootstrap.min.css">
     </head>
     <body>
-        <nav class="navbar navbar-default" role="navigation">
-            <div class="navbar-center navbar-brand" href="#">
-                <a class="nav-brand" href="/">Home</a>
-                <a class="nav-brand" href="/search">Search</a>
-                <a class="nav-brand" href="/contact">Contact</a>
+
+        <div id="desc">
+            <h3>Website Infographic</h3>
+            <h4>Please enter a link to a website which contains information</h4>
+            <p>The information in the specified link will be parsed, sorted based on the frequency of occurence and then displayed</p>
+        <div>
+
+        <form action="/submit" method="post">
+            <div class="form-group center-input">
+                <div class="input-group">
+                    <input type="text" name="website" class="form-control" placeholder="Please Enter a URL.">
+                    <span class="input-group-btn">
+                        <button class="btn btn-secondary" type="submit">Submit</button>
+                    </span>
+                </div>
             </div>
-        </nav>
-        <div class="container-fluid filler">
-            <img src="img/landscape.jpg" class="img-responsive">
-        </div>
+        </form>
     </body>
 </html>

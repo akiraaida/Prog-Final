@@ -2,33 +2,19 @@ body{
     overflow: hidden;
 }
 
-a {
-    color: #777 !important;
+body { 
+    background-image: url('img/background.jpg');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center; 
 }
 
-.nav-brand {
-    float: none;
-    padding-left: 10px;
-    padding-right: 10px;
-}
-
-.navbar{
-    border-radius: 0 !important;
-    margin: 0 !important;
-    border-bottom: 1px solid black !important;
-}
-
-.filler{
-    margin: 0 !important;
-    padding: 0 !important;
-}
-
-.navbar-center{
-    position: absolute;
-    width: 100%;
-    left: 0;
-    top: 0;
+#desc{
     text-align: center;
-    margin: auto;
-    height: 100%;
+}
+
+.center-input{
+    margin: 0 auto;
+    margin-bottom: 0 !important;
+    width: 50%;
 }
