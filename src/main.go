@@ -1,45 +1,45 @@
 package main
 
 import (
-	//	"fmt"
-	//	"golang.org/x/net/html"
-	//	"io/ioutil"
+	"fmt"
+	"golang.org/x/net/html"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 )
-
-/*
-func whitespace(item string)(res bool) {
-    ws := []string{"", " ", "\t", "\n"}
-    for i := 0; i < len(ws); i++ {
-        if item == ws[i] {
-            res = true
-            return
-        }
-    }
-    res = false
-    return
-}
 
 func parse(data string) {
 
-    for i := 0; i < len(data); i++ {
-        ws := whitespace(string(data[i]))
-        if ws == false {
-            fmt.Println(string(data[i]))
-        }
-    }
+	doc, err := html.Parse(strings.NewReader(data))
+	if err != nil {
+		log.Fatal(err)
+	}
+	var f func(*html.Node)
+	f = func(n *html.Node) {
+		if n.Type == html.ElementNode && n.Data == "a" {
+			for _, a := range n.Attr {
+				//if a.Key == "href" {
+				fmt.Println(a.Val)
+				break
+				//}
+			}
+		}
+		for c := n.FirstChild; c != nil; c = c.NextSibling {
+			f(c)
+		}
+	}
+	f(doc)
 }
-*/
 
 func retrieve(site string) {
 	resp, err := http.Get(site)
 	if err != nil {
 		return
 	}
-	body := resp.Body
-	defer body.Close()
-	//parse(string(body))
+	defer resp.Body.Close()
+	body, _ := ioutil.ReadAll(resp.Body)
+	parse(string(body))
 }
 
 func handleSubmit(w http.ResponseWriter, r *http.Request) {
