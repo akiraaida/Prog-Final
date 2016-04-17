@@ -103,40 +103,50 @@ func parse(w http.ResponseWriter, data io.Reader) {
             // Then check if the tag is a <p> tag 
             checkToken := tokenStream.Token()
             if(checkToken.Data == "p"){
+                depth := 1
+                for depth > 0 {    
 
-                // If it is a <p> tag then move the token
-                // forward into the TextToken (but check to
-                // make sure it is one)
-                checkText := tokenStream.Next()
-                if checkText == html.TextToken {
+                    checkNext := tokenStream.Next()
+                
+                    switch {
+                        // Check if it's a text token, if so then parse it
+                        case checkNext == html.TextToken:
+                            // Get the text as a byte array
+                            byteData := tokenStream.Text()
+                            // Initialize a variable that will hold the words
+                            // parsed from byte -> string conversion
+                            word := ""
 
-                    // Get the text as a byte array
-                    byteData := tokenStream.Text()
-                    
-                    // Initialize a variable that will hold the words
-                    // parsed from byte -> string conversion
-                    word := ""
+                            // Loop through the byte array, concatenating to the
+                            // word string unless it is a 32 (space), 10 (newline) or 9 (tab).
+                            // If it is one of those and the word is not empty, then a word
+                            // has been found and append it to the slice created at the start
+                            for i := 0; i < len(byteData); i++ {
+                                if byteData[i] != 32 && byteData[i] != 10 && byteData[i] != 9 {
+                                    word += string(byteData[i])
+                                } else {
+                                    if word != "" {
+                                        wordList = append(wordList, word)
+                                        word = ""
+                                    }
+                                }
+                            }
 
-                    // Loop through the byte array, concatenating to the
-                    // word string unless it is a 32 (space), 10 (newline) or 9 (tab).
-                    // If it is one of those and the word is not empty, then a word
-                    // has been found and append it to the slice created at the start
-                    for i := 0; i < len(byteData); i++ {
-                        if byteData[i] != 32 && byteData[i] != 10 && byteData[i] != 9 {
-                            word += string(byteData[i])
-                        } else {
+                            // If we make it to the end of the byte array and there was no
+                            // 32, 10, or 9 to signify the end of a the word then we add
+                            // it to the slice
                             if word != "" {
                                 wordList = append(wordList, word)
-                                word = ""
                             }
-                        }
-                    }
 
-                    // If we make it to the end of the byte array and there was no
-                    // 32, 10, or 9 to signify the end of a the word then we add
-                    // it to the slice
-                    if word != "" {
-                        wordList = append(wordList, word)
+                        // Check if it's a start tag within the <p> tag, if so increase
+                        // the depth so the data can be either skipped (if non text) or
+                        // parsed
+                        case checkNext == html.StartTagToken:
+                            depth++
+                        // When the depth is 0 then the matching <p> tag has been found
+                        case checkNext == html.EndTagToken:
+                            depth--
                     }
                 }
             }
