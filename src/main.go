@@ -9,27 +9,73 @@ import (
 )
 
 func parse(data io.Reader) {
-
+    
+    // HTML is tokenized using a tokenizer
+    // on the response body that was fetched
     tokenStream := html.NewTokenizer(data)
 
+    // Create a slice for the words that will be
+    // parsed from the HTML
+    wordList := make([]string, 0)
+
+    // Loops through all of the tokens one by one
     for {
+        // Gets the next token
         token := tokenStream.Next()
+
+        // If the next token is an error token
+        // like the end of file then it breaks
+        // out of the loop
         if token == html.ErrorToken {
-            return
+            break
         }
                 
+        // If the token is a start tag
         if token == html.StartTagToken {
-            checkToken := tokenStream.Token()
             
+            // Then check if the tag is a <p> tag 
+            checkToken := tokenStream.Token()
             if(checkToken.Data == "p"){
+
+                // If it is a <p> tag then move the token
+                // forward into the TextToken (but check to
+                // make sure it is one)
                 checkText := tokenStream.Next()
                 if checkText == html.TextToken {
+
+                    // Get the text as a byte array
                     byteData := tokenStream.Text()
-                    fmt.Println(string(byteData[:]))
+                    
+                    // Initialize a variable that will hold the words
+                    // parsed from byte -> string conversion
+                    word := ""
+
+                    // Loop through the byte array, concatenating to the
+                    // word string unless it is a 32 (space), 10 (newline) or 9 (tab).
+                    // If it is one of those and the word is not empty, then a word
+                    // has been found and append it to the slice created at the start
+                    for i := 0; i < len(byteData); i++ {
+                        if byteData[i] != 32 && byteData[i] != 10 && byteData[i] != 9{
+                            word += string(byteData[i])
+                        } else {
+                            if word != "" {
+                                wordList = append(wordList, word)
+                                word = ""
+                            }
+                        }
+                    }
+
+                    // If we make it to the end of the byte array and there was no
+                    // 32, 10, or 9 to signify the end of a the word then we add
+                    // it to the slice
+                    if word != "" {
+                        wordList = append(wordList, word)
+                    }
                 }
             }
         }
     } 
+    fmt.Println(wordList)
 }
 
 func retrieve(site string) {
@@ -55,20 +101,33 @@ func retrieve(site string) {
 
 func handleSubmit(w http.ResponseWriter, r *http.Request) {
 
+    // The handler for the HTML form submission.
+    // Takes the inputted data and passes it along
     if r.Method == "POST" {
-            r.ParseForm()
-	    site := r.FormValue("website")
-	    retrieve(site)
+        r.ParseForm()
+	site := r.FormValue("website")
+	retrieve(site)
     }
 }
 
 func main() {
 
+    // Handle responds to incoming HTTP requests
+    // FileServer returns a handler that serves any HTTP requests
+    // with the contents of the directory specified
     http.Handle("/", http.FileServer(http.Dir("./home")))
+
+    // HandleFunc connects the function and the path URL
     http.HandleFunc("/submit", handleSubmit)
 
+    // ListenAndServe listens on the network address
+    // specified with a nil handler (specifying to use
+    // the default)
     err := http.ListenAndServe(":8080", nil)
+    
+    // If an error occurs while serving, outputs the
+    // error and then exits then closes the server
     if err != nil {
     	log.Fatal(err)
-    }
+    }  
 }
