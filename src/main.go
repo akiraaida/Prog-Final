@@ -3,61 +3,72 @@ package main
 import (
 	"fmt"
 	"golang.org/x/net/html"
-	"io/ioutil"
 	"log"
 	"net/http"
-	"strings"
+        "io"
 )
 
-func parse(data string) {
+func parse(data io.Reader) {
 
-	doc, err := html.Parse(strings.NewReader(data))
-	if err != nil {
-		log.Fatal(err)
-	}
-	var f func(*html.Node)
-	f = func(n *html.Node) {
-		if n.Type == html.ElementNode && n.Data == "a" {
-			for _, a := range n.Attr {
-				//if a.Key == "href" {
-				fmt.Println(a.Val)
-				break
-				//}
-			}
-		}
-		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			f(c)
-		}
-	}
-	f(doc)
+    tokenStream := html.NewTokenizer(data)
+
+    for {
+        token := tokenStream.Next()
+        if token == html.ErrorToken {
+            return
+        }
+                
+        if token == html.StartTagToken {
+            checkToken := tokenStream.Token()
+            
+            if(checkToken.Data == "p"){
+                checkText := tokenStream.Next()
+                if checkText == html.TextToken {
+                    byteData := tokenStream.Text()
+                    fmt.Println(string(byteData[:]))
+                }
+            }
+        }
+    } 
 }
 
 func retrieve(site string) {
-	resp, err := http.Get(site)
-	if err != nil {
-		return
-	}
-	defer resp.Body.Close()
-	body, _ := ioutil.ReadAll(resp.Body)
-	parse(string(body))
+        
+    // Get takes a string and returns a response and error
+    // The error is nil if the response was successful
+    // The response is a data structure that contains alot
+    // of information about the page. The body being the
+    // main part that is needed
+    resp, err := http.Get(site)
+    if err != nil {
+    	return
+    }
+    // The response body must be closed due to potential leaking of
+    // open files
+    defer resp.Body.Close()
+        
+    // Calls parse with the body that was extracted from the Get
+    // The body is of type ReadCloser which uses the interface
+    // io.Reader
+    parse(resp.Body)
 }
 
 func handleSubmit(w http.ResponseWriter, r *http.Request) {
 
-	if r.Method == "POST" {
-		r.ParseForm()
-		site := r.FormValue("website")
-		retrieve(site)
-	}
+    if r.Method == "POST" {
+            r.ParseForm()
+	    site := r.FormValue("website")
+	    retrieve(site)
+    }
 }
 
 func main() {
 
-	http.Handle("/", http.FileServer(http.Dir("./home")))
-	http.HandleFunc("/submit", handleSubmit)
+    http.Handle("/", http.FileServer(http.Dir("./home")))
+    http.HandleFunc("/submit", handleSubmit)
 
-	err := http.ListenAndServe("www.akiraaida.me:80", nil)
-	if err != nil {
-		log.Fatal(err)
-	}
+    err := http.ListenAndServe(":8080", nil)
+    if err != nil {
+    	log.Fatal(err)
+    }
 }
