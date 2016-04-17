@@ -8,3 +8,6 @@ run:
 
 build:
 	go get golang.org/x/net/html
+
+clean:
+	rm main
