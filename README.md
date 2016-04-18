@@ -3,6 +3,7 @@
 ***
 <p><b>1. Github:</b> Your code just be in a public repository on github.com.<br>
 <p><b>- Repository:</b> My public repository can be found at https://github.com/akiraaida/Prog-Final.</p>
+<p><b>- Website:</b> My website is hosted using DigitalOcean and a domain name from Namecheap. My website can be found at www.akiraaida.me.</p>
 ***
 <p><b>2. Activities:</b> You must make frequent updates to the git repo.  This will be verified using “git log” command.  You must have an entry to your git repo at least every two days.
 
