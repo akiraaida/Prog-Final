@@ -61,6 +61,7 @@ func main () {
 &emsp;}
 
 &emsp;fmt.Println(val) // Prints 10
+
 }
 ***
 <p><b>8. Live Demo</b></br>
