@@ -33,23 +33,30 @@ func sortMap(w http.ResponseWriter, wordMap map[string]int){
     // Sort sorts counts thus it'll have counts going from high -> low
     sort.Sort(sort.Reverse(sort.IntSlice(counts)))
 
+    fmt.Fprintf(w, "<html><head><link rel=\"stylesheet\" type=\"text/css\" href=\"index.css\"><link rel=\"stylesheet\" type=\"text/css\" href=\"bootstrap.min.css\"></head><body>")
+    fmt.Fprintf(w, "<a id=\"homeButton\" href=\"/\">Home</a><p>")
+    fmt.Fprintf(w, "<table class=\"table table-bordered\"><thead><tr><th>Rank</th><th>Word</th><th>Occurence</th></tr></thead><tbody>")
+
     // Iterate through counts, throwing away the index
     num := 1
     for _, count := range counts {
         // Get the word where the count specifies it should be
         for _, word := range tempMap[count] {
             // Print the data in descending order
-            fmt.Fprintf(w, "%d: %s, %d\n", num, word, count) 
+            fmt.Fprintf(w, "<tr>")
+            fmt.Fprintf(w, "<td><b>%d</b></td><td><b>%s</b></td><td><b>%d</b></td>", num, word, count) 
+            fmt.Fprintf(w, "</tr>")
 
-            if num == 25 {
+            if num == 16 {
                 break
             }
             num++
         }
-        if num == 25 {
+        if num == 16 {
             break
         }
     }
+    fmt.Fprintf(w, "</tbody></table></body></html>")
 }
 
 func countOcc(w http.ResponseWriter, wordList []string){
@@ -180,6 +187,7 @@ func handleSubmit(w http.ResponseWriter, r *http.Request) {
 
     // The handler for the HTML form submission.
     // Takes the inputted data and passes it along
+    //http.ServeFile(w, r, "home/submit.html")
     if r.Method == "POST" {
         r.ParseForm()
 	site := r.FormValue("website")
@@ -200,6 +208,7 @@ func main() {
     // ListenAndServe listens on the network address
     // specified with a nil handler (specifying to use
     // the default)
+    // Creates a new go routine for every connection
     err := http.ListenAndServe(":8080", nil)
     
     // If an error occurs while serving, outputs the

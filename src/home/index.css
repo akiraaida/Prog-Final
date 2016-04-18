@@ -18,3 +18,10 @@ body {
     margin-bottom: 0 !important;
     width: 50%;
 }
+
+#homeButton {
+    margin-left: 50%;
+    font-size: 20px;
+    font-weight: bold;
+    color: black;
+}
