@@ -11,39 +11,39 @@ import (
 
 func partition(counts []int, start int, end int) (mid int) {
 
-        // Move larger items before the pivot and smaller after it
-        pivot := counts[end]
-        i := start - 1;
+	// Move larger items before the pivot and smaller after it
+	pivot := counts[end]
+	i := start - 1
 
-        for j := start; j < end; j++ {
-                if counts[j] >= pivot {
-                        i = i + 1;
-                        temp := counts[i]
-                        counts[i] = counts[j]
-                        counts[j] = temp
-                }
-        } 
-        
-        temp := counts[i+1]
-        counts[i+1] = counts[end]
-        counts[end] = temp
+	for j := start; j < end; j++ {
+		if counts[j] >= pivot {
+			i = i + 1
+			temp := counts[i]
+			counts[i] = counts[j]
+			counts[j] = temp
+		}
+	}
 
-        mid = i+1
+	temp := counts[i+1]
+	counts[i+1] = counts[end]
+	counts[end] = temp
 
-        return
+	mid = i + 1
+
+	return
 }
 
-func quickSort(counts []int, start int, end int, channel chan []int) {//(sortedCounts []int) {
-                
-        // Continuously partition until start < end
-        if start < end {
-                mid := partition(counts, start, end)
-                quickSort(counts, start, mid-1, channel)
-                quickSort(counts, mid+1, end, channel)
-        }
-        sortedCounts := counts
-        //return
-        channel <-sortedCounts
+func quickSort(counts []int, start int, end int, channel chan []int) { //(sortedCounts []int) {
+
+	// Continuously partition until start < end
+	if start < end {
+		mid := partition(counts, start, end)
+		quickSort(counts, start, mid-1, channel)
+		quickSort(counts, mid+1, end, channel)
+	}
+	sortedCounts := counts
+	//return
+	channel <- sortedCounts
 }
 
 func sortMap(w http.ResponseWriter, wordMap map[string]int) {
@@ -63,12 +63,12 @@ func sortMap(w http.ResponseWriter, wordMap map[string]int) {
 		counts = append(counts, count)
 	}
 
-        // Quicksort the counts slice to be sorted from most occuring to least occuring
-        // Just for the sake of learning, created a thread and channel for the quicksort
-        channel := make(chan []int)
-        go quickSort(counts, 0, len(counts)-1, channel)
-        counts = <-channel
-        //counts = quickSort(counts, 0, len(counts)-1)
+	// Quicksort the counts slice to be sorted from most occuring to least occuring
+	// Just for the sake of learning, created a thread and channel for the quicksort
+	channel := make(chan []int)
+	go quickSort(counts, 0, len(counts)-1, channel)
+	counts = <-channel
+	//counts = quickSort(counts, 0, len(counts)-1)
 
 	fmt.Fprintf(w, "<table class=\"table table-bordered\"><thead><tr><th>Rank</th><th>Word</th><th>Occurence</th></tr></thead><tbody>")
 
@@ -205,7 +205,7 @@ func retrieve(w http.ResponseWriter, site string) {
 	// of information about the page. The body being the
 	// main part that is needed
 	resp, err := http.Get(site)
-        // If no input or an error, don't proceed further
+	// If no input or an error, don't proceed further
 	if err != nil {
 		return
 	}
@@ -230,7 +230,7 @@ func handleSubmit(w http.ResponseWriter, r *http.Request) {
 		site := r.FormValue("website")
 		retrieve(w, site)
 	}
-        fmt.Fprintf(w, "</body></html>")
+	fmt.Fprintf(w, "</body></html>")
 }
 
 func main() {
@@ -247,7 +247,7 @@ func main() {
 	// specified with a nil handler (specifying to use
 	// the default)
 	// Creates a new go routine for every connection
-	err := http.ListenAndServe(":8080", nil)
+	err := http.ListenAndServe("www.akiraaida.me:80", nil)
 
 	// If an error occurs while serving, outputs the
 	// error and then exits then closes the server
