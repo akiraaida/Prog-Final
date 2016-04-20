@@ -33,7 +33,7 @@ http.Handle("/", http.FileServer(http.Dir("./home")))
 
 http.HandleFunc("/submit", handleSubmit)
 
-err := http.ListenAndServe(":8080", nil)
+err := http.ListenAndServe("www.akiraaida.me:80", nil)
 
 resp, err := http.Get(site)
 
