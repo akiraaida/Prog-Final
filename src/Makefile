@@ -4,7 +4,7 @@ prepare:
 	go build server.go
 
 run:
-	./server
+	nohup ./server &
 
 build:
 	go get golang.org/x/net/html

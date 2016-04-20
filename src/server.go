@@ -33,17 +33,16 @@ func partition(counts []int, start int, end int) (mid int) {
 	return
 }
 
-func quickSort(counts []int, start int, end int, channel chan []int) { //(sortedCounts []int) {
+func quickSort(counts []int, start int, end int) (sortedCounts []int) {
 
 	// Continuously partition until start < end
 	if start < end {
 		mid := partition(counts, start, end)
-		quickSort(counts, start, mid-1, channel)
-		quickSort(counts, mid+1, end, channel)
+		quickSort(counts, start, mid-1)
+		quickSort(counts, mid+1, end)
 	}
-	sortedCounts := counts
-	//return
-	channel <- sortedCounts
+	sortedCounts = counts
+	return
 }
 
 func sortMap(w http.ResponseWriter, wordMap map[string]int) {
@@ -64,11 +63,7 @@ func sortMap(w http.ResponseWriter, wordMap map[string]int) {
 	}
 
 	// Quicksort the counts slice to be sorted from most occuring to least occuring
-	// Just for the sake of learning, created a thread and channel for the quicksort
-	channel := make(chan []int)
-	go quickSort(counts, 0, len(counts)-1, channel)
-	counts = <-channel
-	//counts = quickSort(counts, 0, len(counts)-1)
+	counts = quickSort(counts, 0, len(counts)-1)
 
 	fmt.Fprintf(w, "<table class=\"table table-bordered\"><thead><tr><th>Rank</th><th>Word</th><th>Occurence</th></tr></thead><tbody>")
 
