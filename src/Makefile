@@ -1,13 +1,13 @@
 all: build prepare run
 
 prepare:
-	go build main.go
+	go build server.go
 
 run:
-	./main
+	./server
 
 build:
 	go get golang.org/x/net/html
 
 clean:
-	rm main
+	rm server
